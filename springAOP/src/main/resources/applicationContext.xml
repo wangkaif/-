@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+	<!-- 创建对象 -->	
+	<bean name="UserBiz" class="com.dzkj.biz.UserBiz"></bean>
+	<bean name="BizAop" class="com.dzkj.aop.BizAop"></bean>
+	<bean name="a" class="com.dzkj.declare.AImpl"></bean>
+	<bean name="b" class="com.dzkj.declare.BImpl"></bean>
+	<!-- aop配置 -->
+	<aop:config>
+		<!-- 切入点 指在什么类  什么方法 执行时切入 -->
+		<!-- 第一个*  匹配任意返回值
+			   第二个*  匹配任意类
+			   第三个*  匹配任意方法
+				..匹配任意个数的形参
+		 -->
+	<aop:pointcut id="mypointcut" expression="execution(* com.dzkj.biz.*.*(..))"/>
+	<!--	配置切面  切入后要做的事情  周边功能  -->
+	  <aop:aspect ref="BizAop">
+	 	<aop:before method="前置增强" pointcut-ref="mypointcut"/>
+	 	<aop:after method="后置增强" pointcut-ref="mypointcut"/>
+	 	<aop:around method="环绕" pointcut-ref="mypointcut"/>
+	 	<aop:after-returning method="返回通知" pointcut-ref="mypointcut" returning="o"/>
+	 	<aop:after-throwing method="异常通知" pointcut-ref="mypointcut" throwing="e"/>
+	  </aop:aspect>
+	  <aop:aspect>
+	  		<aop:declare-parents types-matching="com.dzkj.declare.AImpl"
+	  		 implement-interface="com.dzkj.declare.B"
+	  		  default-impl="com.dzkj.declare.BImpl"/>
+	  </aop:aspect>
+	</aop:config>
+</beans>
